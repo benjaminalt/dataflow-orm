@@ -185,5 +185,6 @@ venv.bak/
 dmypy.json
 
 generated
+output
 venv
 .idea
