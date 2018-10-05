@@ -9,13 +9,26 @@
 
 namespace dataflow
 {
+namespace keys
+{
+namespace Person
+{
+const std::string PersonID = "PersonID";
+const std::string LastName = "LastName";
+const std::string FirstName = "FirstName";
+const std::string Age = "Age";
+}
+}
+
 class Person: public Object
 {
 public:
     typedef std::shared_ptr<Person> Ptr;
 
     Person(int personID, const std::string& lastName, const std::string& firstName, int age)
-    : personID_("PersonID", personID), lastName_("LastName", lastName), firstName_("FirstName", firstName), age_("Age", age)
+    : Object({keys::Person::PersonID, keys::Person::LastName, keys::Person::FirstName, keys::Person::Age},
+            {keys::Person::PersonID},
+            {{keys::Person::PersonID, personID}, {keys::Person::LastName, lastName}, {keys::Person::FirstName, firstName}, {keys::Person::Age, age}})
     {};
 
     // Methods inherited from Object
@@ -28,23 +41,7 @@ public:
         visitor.visit(this);
     }
 
-    // Accessors for members
-    Member<int> personID() const
-    {
-        return personID_;
-    }
-    Member<std::string> lastName() const
-    {
-        return lastName_;
-    }
-    Member<std::string> firstName() const
-    {
-        return firstName_;
-    }
-    Member<int> age() const
-    {
-        return age_;
-    }
+    // Also autogenerate getters for the values
 
     // Static methods
     static Person::Ptr fetchOne(Factory& factory, const Query& query)
@@ -60,10 +57,5 @@ public:
     {
         return factory.fetchPersons(query);
     }
-private:
-    Member<int> personID_;
-    Member<std::string> lastName_;
-    Member<std::string> firstName_;
-    Member<int> age_;
 };
 }

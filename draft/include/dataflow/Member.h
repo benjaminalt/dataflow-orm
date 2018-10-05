@@ -1,27 +1,28 @@
 #pragma once
 
+#include <boost/variant.hpp>
+
 #include <string>
 
 namespace dataflow
 {
-class Factory;
+typedef boost::variant<int, double, std::string> Value;
 
-template <typename ValueType>
 class Member
 {
 public:
-    Member(const std::string& field, const ValueType& value)
+    Member(const std::string& field, const Value& value)
      : field_(field), value_(value) {};
     std::string field() const
     {
         return field_;
     };
-    ValueType get() const
+    Value get() const
     {
         return value_;
     };
 private:
     std::string field_;
-    ValueType value_;
+    Value value_;
 };
 }

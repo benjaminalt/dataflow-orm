@@ -9,13 +9,26 @@
 
 namespace dataflow
 {
+namespace keys
+{
+namespace Order
+{
+const std::string OrderID = "OrderID";
+const std::string OrderNumber = "OrderNumber";
+const std::string PersonID = "PersonID";
+}
+}
+
+
 class Order: public Object
 {
 public:
     typedef std::shared_ptr<Order> Ptr;
 
     Order(int orderID, int orderNumber, int personID)
-    : orderID_("OrderID", orderID), orderNumber_("OrderNumber", orderNumber), personID_("PersonID", personID)
+    : Object({keys::Order::OrderID, keys::Order::OrderNumber, keys::Order::PersonID},
+            {keys::Order::OrderID},
+            {{keys::Order::OrderID, orderID}, {keys::Order::OrderNumber, orderNumber}, {keys::Order::PersonID, personID}})
     {};
 
     // Methods inherited from Object
@@ -28,19 +41,7 @@ public:
         visitor.visit(this);
     }
 
-    // Accessors for members
-    Member<int> orderID() const
-    {
-        return orderID_;
-    }
-    Member<int> orderNumber() const
-    {
-        return orderNumber_;
-    }
-    Member<int> personID() const
-    {
-        return personID_;
-    }
+    // Also autogenerate getters for the values
 
     // Static methods
     static Order::Ptr fetchOne(Factory& factory, const Query& query)
@@ -56,9 +57,5 @@ public:
     {
         return factory.fetchOrders(query);
     }
-private:
-    Member<int> orderID_;
-    Member<int> orderNumber_;
-    Member<int> personID_;
 };
 }
