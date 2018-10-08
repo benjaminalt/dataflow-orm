@@ -3,8 +3,8 @@ import os, shutil
 from antlr4 import *
 from generated.MySqlLexer import MySqlLexer
 from generated.MySqlParser import MySqlParser
-from generator.CaseChangingInputStream import CaseChangingInputStream
-from generator.MySqlCppListener import MySqlCppListener
+from generator.MySqlCppVisitor import MySqlCppVisitor
+from generator.case_changing_input_stream import CaseChangingInputStream
 from generator.codegen.generate_cmake import generate_cmakelists
 
 
@@ -22,10 +22,9 @@ def generate(project_name, input_string, output_dir):
     lexer = MySqlLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = MySqlParser(stream)
-    tree = parser.sqlStatement()
-    cpp = MySqlCppListener(output_dir)
-    walker = ParseTreeWalker()
-    walker.walk(cpp, tree)
+    tree = parser.sqlStatements()
+    cpp = MySqlCppVisitor(output_dir)
+    tree.accept(cpp)
 
     # Generate CMakeLists
     with open(os.path.join(output_dir, "CMakeLists.txt"), "w") as cmakelists_file:
