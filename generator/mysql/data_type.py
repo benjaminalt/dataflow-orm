@@ -43,15 +43,15 @@ class DataType(object):
     def __init__(self, mysql_type_string, nullable=True, unsigned=False):
         self.nullable = nullable
         self.unsigned = unsigned
-        self.cpp_type_string = self._cpp_type(mysql_type_string.upper())
+        self.mysql_type_string = mysql_type_string
 
-    def _cpp_type(self, mysql_type_string):
+    def cpp_type(self):
         for base_type in MYSQL_BASE_TYPES:
-            if base_type.mysql_type_regex.match(mysql_type_string):
+            if base_type.mysql_type_regex.match(self.mysql_type_string.upper()):
                 cpp_type_string = base_type.cpp_string
                 if base_type.category == MySqlTypeCategories.INTEGRAL and self.unsigned:
                     cpp_type_string = "u" + cpp_type_string
                 if self.nullable:
                     cpp_type_string = "boost::optional<{}>".format(cpp_type_string)
                 return cpp_type_string
-        raise RuntimeError("DataType::_cpp_type: No cpp type for MySQL type {}".format(mysql_type_string))
+        raise RuntimeError("DataType::_cpp_type: No cpp type for MySQL type {}".format(self.mysql_type_string.upper()))
