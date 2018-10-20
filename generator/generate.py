@@ -3,19 +3,20 @@ import os, shutil
 from antlr4 import *
 from generated.MySqlLexer import MySqlLexer
 from generated.MySqlParser import MySqlParser
-from generator.MySqlCppVisitor import MySqlCppVisitor
+from generator.MySqlCppListener import MySqlCppListener
 from generator.case_changing_input_stream import CaseChangingInputStream
 from generator.codegen.generate_cmake import generate_cmakelists
 
 
 def generate(project_name, input_string, output_dir):
     include_dir = os.path.join(output_dir, "include")
-
+    if not os.path.exists(include_dir):
+        os.makedirs(include_dir)
     # Copy predefined headers to include dir
     script_dir = os.path.dirname(os.path.realpath(__file__))
     predefined_header_dir = os.path.join(script_dir, "codegen", "predefined")
     for predefined_header in os.listdir(predefined_header_dir):
-        shutil.copyfile(os.path.join(predefined_header_dir, predefined_header), include_dir)
+        shutil.copy(os.path.join(predefined_header_dir, predefined_header), include_dir)
 
     # Generate headers
     input_stream = CaseChangingInputStream(input_string, InputStream(input_string), True)
@@ -23,8 +24,9 @@ def generate(project_name, input_string, output_dir):
     stream = CommonTokenStream(lexer)
     parser = MySqlParser(stream)
     tree = parser.sqlStatements()
-    cpp = MySqlCppVisitor(output_dir)
-    tree.accept(cpp)
+    listener = MySqlCppListener(output_dir)
+    walker = ParseTreeWalker()
+    walker.walk(listener, tree)
 
     # Generate CMakeLists
     with open(os.path.join(output_dir, "CMakeLists.txt"), "w") as cmakelists_file:
