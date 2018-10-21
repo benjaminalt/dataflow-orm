@@ -1,14 +1,15 @@
 from unittest import TestCase
 from generator.codegen.cls import Class
 from generator.codegen.common import AccessModifier
-from generator.codegen.function import Function, Argument
+from generator.codegen.member_function import MemberFunction, Argument
+from generator.mysql.data_type import CppDataType, VoidType
 
 classA = Class("ClassA", None, None, [
-    Function("functionA", [Argument("a", "std::string", True, True),
-                           Argument("b", "double", False, False)]),
-    Function("functionB", None, "bool", AccessModifier.PROTECTED, "functionA(\"test\", 1);\nreturn true;", virtual=True),
-    Function("functionC", None, "int", AccessModifier.PRIVATE, None, virtual=True, purely_virtual=True),
-    Function("functionD", None, "void", AccessModifier.PRIVATE, static=True)
+    MemberFunction("functionA", [Argument("a", CppDataType("std::string", ["string"]), True, True),
+                                 Argument("b", CppDataType("double"), False, False)]),
+    MemberFunction("functionB", None, CppDataType("bool"), AccessModifier.PROTECTED, "functionA(\"test\", 1);\nreturn true;", virtual=True),
+    MemberFunction("functionC", None, CppDataType("int"), AccessModifier.PRIVATE, None, virtual=True, purely_virtual=True),
+    MemberFunction("functionD", None, VoidType(), AccessModifier.PRIVATE, static=True)
 ], None)
 
 

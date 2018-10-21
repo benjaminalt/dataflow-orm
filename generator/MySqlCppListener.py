@@ -2,9 +2,10 @@ from generated.MySqlParser import MySqlParser
 from generated.MySqlParserListener import MySqlParserListener
 from generator import utils
 from generator.codegen import codegen
-from generator.mysql.data_type import DataType
+from generator.mysql.data_type import MySqlDataType
 
 import os
+
 
 class MySqlCppListener(MySqlParserListener):
     def __init__(self, output_dir):
@@ -31,20 +32,25 @@ class MySqlCppListener(MySqlParserListener):
         object_name = utils.object_name(table_name)
         object = {
             "name": object_name,
-            "header_filename": object_name + ".h"
+            "header_filename": object_name + ".h",
+            "columns": []
         }
         self.objects.append(object)
 
     def enterColumnDeclaration(self, ctx:MySqlParser.ColumnDeclarationContext):
         column_name = ctx.uid().getText()
         print("MySqlCppListener::enterColumnDeclaration: {}".format(column_name))
-        self.objects[-1]["column"] = {"type": "column",
+        self.objects[-1]["columns"].append({"type": "column",
                                       "column_name": column_name,
-                                      "object_name": utils.object_name(column_name)}
+                                      "object_name": utils.object_name(column_name)})
 
     def enterColumnDefinition(self, ctx:MySqlParser.ColumnDefinitionContext):
         print("MySqlCppListener::enterColumnDefinition")
-        self.objects[-1]["column"]["data_type"] = DataType(ctx.dataType().getText())
+        self.objects[-1]["columns"][-1]["data_type"] = MySqlDataType(ctx.dataType().getText())
 
     def enterNullColumnConstraint(self, ctx:MySqlParser.NullColumnConstraintContext):
-        self.objects[-1]["column"]["data_type"].nullable = ctx.nullNotnull().getText() != "NOTNULL"
+        self.objects[-1]["columns"][-1]["data_type"].set_nullable(
+            not (ctx.nullNotnull().NOT() is not None and ctx.nullNotnull().NULL_LITERAL() is not None))
+
+    def enterDimensionDataType(self, ctx:MySqlParser.DimensionDataTypeContext):
+        self.objects[-1]["columns"][-1]["data_type"].set_unsigned(ctx.UNSIGNED() is not None)

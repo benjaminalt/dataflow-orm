@@ -33,3 +33,11 @@ class Class(object):
             if have_member:
                 res += member_list + "\n"
         return res + "};"
+
+    def required_headers(self):
+        headers = set()
+        for obj in self.member_objects:
+            headers.update(obj.required_headers())
+        for fn in self.member_functions:
+            headers.update(fn.required_headers())
+        return headers
