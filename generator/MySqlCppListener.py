@@ -1,29 +1,18 @@
 from generated.MySqlParser import MySqlParser
 from generated.MySqlParserListener import MySqlParserListener
 from generator import utils
-from generator.codegen import codegen
 from generator.mysql.data_type import MySqlDataType
-
-import os
 
 
 class MySqlCppListener(MySqlParserListener):
-    def __init__(self, output_dir):
-        self.output_dir = output_dir
-        self.include_dir = os.path.join(output_dir, "include")
+    def __init__(self):
         self.objects = []
 
     def enterSqlStatements(self, ctx:MySqlParser.SqlStatementsContext):
         pass
 
     def exitSqlStatements(self, ctx:MySqlParser.SqlStatementsContext):
-        # Add boilerplate
-        # Create header for each object
-        for object in self.objects:
-            header_contents = codegen.generate_header(object)
-            with open(os.path.join(self.include_dir, object["header_filename"]), "w") as header_file:
-                header_file.write(header_contents)
-        # Create visitor
+        pass
 
     def enterColumnCreateTable(self, ctx:MySqlParser.ColumnCreateTableContext):
         # Each table corresponds to one object

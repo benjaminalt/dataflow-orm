@@ -5,7 +5,9 @@ from generated.MySqlLexer import MySqlLexer
 from generated.MySqlParser import MySqlParser
 from generator.MySqlCppListener import MySqlCppListener
 from generator.case_changing_input_stream import CaseChangingInputStream
+from generator.codegen import codegen
 from generator.codegen.generate_cmake import generate_cmakelists
+from generator.codegen.generate_main_executable import generate_main_executable
 
 
 def generate(project_name, input_string, output_dir):
@@ -24,10 +26,22 @@ def generate(project_name, input_string, output_dir):
     stream = CommonTokenStream(lexer)
     parser = MySqlParser(stream)
     tree = parser.sqlStatements()
-    listener = MySqlCppListener(output_dir)
+    listener = MySqlCppListener()
     walker = ParseTreeWalker()
     walker.walk(listener, tree)
 
+    # Add boilerplate
+    # TODO
+    # Create header for each object
+    for obj in listener.objects:
+        header_contents = codegen.generate_header(obj)
+        with open(os.path.join(include_dir, obj["header_filename"]), "w") as header_file:
+            header_file.write(header_contents)
+    # Create visitor
+
+    # Dummy executable
+    with open(os.path.join(output_dir, "main.cpp"), "w") as dummy_executable:
+        dummy_executable.write(generate_main_executable(listener.objects))
     # Generate CMakeLists
     with open(os.path.join(output_dir, "CMakeLists.txt"), "w") as cmakelists_file:
         cmakelists_file.write(generate_cmakelists(project_name))
