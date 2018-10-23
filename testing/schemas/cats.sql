@@ -1,4 +1,4 @@
-CREATE TABLE cats
+CREATE TABLE Cats
 (
   id              INT unsigned NOT NULL AUTO_INCREMENT, # Unique ID for the record
   name            VARCHAR(150) NOT NULL,                # Name of the cat

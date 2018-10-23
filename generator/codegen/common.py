@@ -10,3 +10,15 @@ class AccessModifier(Enum):
 
 def indent(text):
     return re.sub('^', ' ' * 4, text, flags=re.MULTILINE)
+
+
+def begin_namespace(namespace):
+    return "namespace {}\n{{\n".format(namespace)
+
+
+def end_namespace():
+    return "\n}\n"
+
+
+def include(header):
+    return "#include <{}>\n".format(header)

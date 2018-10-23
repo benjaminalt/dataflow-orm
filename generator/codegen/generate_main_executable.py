@@ -1,5 +1,4 @@
-from generator.codegen.codegen import include
-
+from generator.codegen.common import include
 
 DUMMY_MAIN = """int main(void)
 {
