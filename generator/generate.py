@@ -10,7 +10,7 @@ from generator.codegen.generate_cmake import generate_cmakelists
 from generator.codegen.generate_main_executable import generate_main_executable
 
 
-def generate(project_name, input_filepath, output_dir):
+def generate(project_name, input_filepath, output_dir, namespace="dataflow"):
     include_dir = os.path.join(output_dir, "include")
     if not os.path.exists(include_dir):
         os.makedirs(include_dir)
@@ -36,7 +36,7 @@ def generate(project_name, input_filepath, output_dir):
     # TODO
     # Create header for each object
     for obj in listener.objects:
-        header_contents = generate_header.generate_header(obj)
+        header_contents = generate_header.generate_header(obj, namespace)
         with open(os.path.join(include_dir, obj["header_filename"]), "w") as header_file:
             header_file.write(header_contents)
     # Create visitor
@@ -60,7 +60,8 @@ def main(args):
         if not os.path.exists(args.output) or not os.path.isdir(args.output):
             raise ValueError("Invalid output directory: {}".format(args.output))
         output_dir = args.output
-    generate(args.project_name, input_file, output_dir)
+    namespace = args.namespace if args.namespace is not None else "dataflow"
+    generate(args.project_name, args.file, output_dir, namespace)
 
 
 if __name__ == '__main__':
@@ -68,4 +69,5 @@ if __name__ == '__main__':
     arg_parser.add_argument("project_name", type=str, help="Project name")
     arg_parser.add_argument("file", type=str, help="Path to input SQL file")
     arg_parser.add_argument("--output", type=str, help="Path to output directory (for generated header files)")
+    arg_parser.add_argument("--namespace", type=str, help="Custom namespace (default is dataflow)")
     main(arg_parser.parse_args())

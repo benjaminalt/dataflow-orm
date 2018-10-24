@@ -13,11 +13,19 @@ def indent(text):
 
 
 def begin_namespace(namespace):
-    return "namespace {}\n{{\n".format(namespace)
+    namespaces = namespace.split("::")
+    res = ""
+    for ns in namespaces:
+        res += "namespace {}\n{{\n".format(ns)
+    return res
 
 
-def end_namespace():
-    return "\n}\n"
+def end_namespace(namespace):
+    namespaces = namespace.split("::")
+    res = ""
+    for ns in namespaces:
+        res += "}\n"
+    return res
 
 
 def include(header):

@@ -35,7 +35,7 @@ class TestGenerate(TestCase):
 
         clear_directory(OUTPUT_DIR)
         schema_filepath = os.path.join(SCHEMA_DIR, schema)
-        generate("test", schema_filepath, OUTPUT_DIR)
+        generate("test", schema_filepath, OUTPUT_DIR, "a::b::c")
 
         # Build
         build_dir = os.path.join(OUTPUT_DIR, "build")

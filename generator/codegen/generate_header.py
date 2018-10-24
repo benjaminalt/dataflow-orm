@@ -5,7 +5,7 @@ from generator.utils import decapitalize
 from . import boilerplate
 
 
-def generate_header(obj):
+def generate_header(obj, namespace="dataflow"):
     includes = set()
     # TODO: Boilerplate includes
     # Each column corresponds to a primitive member with a getter and setter
@@ -26,7 +26,7 @@ def generate_header(obj):
         header_contents += include(header)
     if len(includes) > 0:
         header_contents += "\n"
-    header_contents += begin_namespace("dataflow")
-    header_contents += cls.definition()
-    header_contents += end_namespace()
+    header_contents += begin_namespace(namespace)
+    header_contents += cls.definition() + "\n"
+    header_contents += end_namespace(namespace)
     return header_contents
