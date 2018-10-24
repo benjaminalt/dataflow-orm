@@ -5,7 +5,8 @@ from generated.MySqlLexer import MySqlLexer
 from generated.MySqlParser import MySqlParser
 from generator.MySqlCppListener import MySqlCppListener
 from generator.case_changing_input_stream import CaseChangingInputStream
-from generator.codegen import generate_header
+from generator.codegen.generate_header import generate_header
+from generator.codegen.generate_visitor import generate_visitor
 from generator.codegen.generate_cmake import generate_cmakelists
 from generator.codegen.generate_main_executable import generate_main_executable
 
@@ -36,10 +37,15 @@ def generate(project_name, input_filepath, output_dir, namespace="dataflow"):
     # TODO
     # Create header for each object
     for obj in listener.objects:
-        header_contents = generate_header.generate_header(obj, namespace)
+        header_contents = generate_header(obj, namespace)
         with open(os.path.join(include_dir, obj["header_filename"]), "w") as header_file:
             header_file.write(header_contents)
-    # Create visitor
+
+    # Create Visitor and ConstVisitor
+    with open(os.path.join(include_dir, "Visitor.h"), "w") as visitor_file:
+        visitor_file.write(generate_visitor(listener.objects, namespace, const=False))
+    with open(os.path.join(include_dir, "ConstVisitor.h"), "w") as const_visitor_file:
+        const_visitor_file.write(generate_visitor(listener.objects, namespace, const=True))
 
     # Dummy executable
     with open(os.path.join(output_dir, "main.cpp"), "w") as dummy_executable:
