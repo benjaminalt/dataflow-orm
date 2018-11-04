@@ -8,6 +8,7 @@ INT_HEADER = "stdint.h"
 STRING_HEADER = "string"
 DATE_HEADER = "boost/date_time/gregorian/gregorian.hpp"
 DATETIME_HEADER = "boost/date_time/posix_time/posix_time.hpp"
+SET_HEADER = "set"
 
 
 class MySqlTypeCategories(Enum):
@@ -15,6 +16,8 @@ class MySqlTypeCategories(Enum):
     FLOATING_POINT = 2
     DATETIME = 3
     STRING = 4
+    BOOLEAN = 5
+    SET = 6
 
 
 class MySqlBaseType(object):
@@ -44,7 +47,13 @@ MYSQL_BASE_TYPES = [
     MySqlBaseType("YEAR(\([0-9]+\))?", "uint16_t", MySqlTypeCategories.DATETIME, INT_HEADER),
 
     MySqlBaseType("CHAR(\([0-9]+\))?", "std::string", MySqlTypeCategories.STRING, STRING_HEADER),
-    MySqlBaseType("VARCHAR(\([0-9]+\))?", "std::string", MySqlTypeCategories.STRING, STRING_HEADER)
+    MySqlBaseType("VARCHAR(\([0-9]+\))?", "std::string", MySqlTypeCategories.STRING, STRING_HEADER),
+    MySqlBaseType("((TINY)|(MEDIUM)|(LONG))?TEXT", "std::string", MySqlTypeCategories.STRING, STRING_HEADER),
+    MySqlBaseType("ENUM\(('.+',?)+\)", "std::string", MySqlTypeCategories.STRING, STRING_HEADER),
+
+    MySqlBaseType("BOOLEAN", "bool", MySqlTypeCategories.BOOLEAN),
+
+    MySqlBaseType("SET\(('.+',?)+\)", "std::set<std::string>", MySqlTypeCategories.SET, SET_HEADER)
 ]
 
 
