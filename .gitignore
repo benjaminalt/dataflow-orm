@@ -189,3 +189,4 @@ output
 venv
 .idea
 .vscode
+!/examples/sakila/output/
